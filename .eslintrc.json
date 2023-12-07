@@ -20,6 +20,7 @@
     "rules": {
         "no-use-before-define": "off",
         "no-unused-vars": "warn",
+        "no-underscore-dangle": "off",
         "prettier/prettier": [
             "error",
             {
