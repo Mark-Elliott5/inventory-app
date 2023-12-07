@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const ItemSchema = new Schema({
-  name: { type: String, required: true, maxLength: 60 },
-  description: { type: String, required: true, maxLength: 500 },
-  category: { type: Schema.ObjectId, ref: 'Category', required: true },
+  name: { type: String, required: true, minLength: 4, maxLength: 100 },
+  description: { type: String, required: true, minLength: 10, maxLength: 500 },
+  category: [{ type: Schema.ObjectId, ref: 'Category', required: true }],
   price: {
     type: Number,
     required: true,
