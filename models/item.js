@@ -23,7 +23,7 @@ const ItemSchema = new Schema({
     required: true,
     validate: {
       validator(value) {
-        return Number.isInteger(value);
+        return Number.isInteger(value) && value >= 0;
       },
       message: 'Number in stock must be an integer.',
     },
