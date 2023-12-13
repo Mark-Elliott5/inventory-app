@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body class="flex flex-col">
+    <%- include('sidebar') %>
+    <div>
+      <h>Create Product</h>
+      <div>
+        <form>
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            minlength="4"
+            maxlength="100"
+            value="<%= item.name ? item.name : '' %>"
+          />
+
+          <label for="description">Description:</label>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            minlength="10"
+            maxlength="500"
+            value="<%= item.description ? item.description : '' %>"
+          />
+
+          <label for="price">Price:</label>
+          <input 
+            type="number" 
+            id="price" 
+            name="price" 
+            value="<%= item.price ? item.price : '' %>"
+          />
+
+          <label for="numberInStock">Number in stock:</label>
+          <input 
+            type="number" 
+            id="numberInStock" 
+            name="numberInStock" 
+            value="<%= item.numberInStock ? item.numberInStock : '' %>"
+          />
+
+          <% categories.forEach(function(category) { %>
+            <label for="<%= category.name %>">category:</label>
+            <input 
+              type="checkbox" 
+              id="<%= category.name %>" 
+              name="category" 
+              value="<%=  category.name %>" />
+          <% }); %>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

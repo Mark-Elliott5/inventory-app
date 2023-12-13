@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body class="flex flex-col">
+    <%- include('sidebar') %>
+    <div>
+      <h>Delete Product</h>
+      <div>
+        <p>Are you sure you want to delete <%= item.name %>?</p>
+        <form>
+          <button type="submit">Delete Product</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
