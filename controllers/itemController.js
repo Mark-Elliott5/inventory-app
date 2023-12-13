@@ -172,7 +172,7 @@ exports.itemDeletePost = asyncHandler(async (req, res, next) => {
 });
 
 // Display item update form on GET.
-exports.item_update_get = asyncHandler(async (req, res, next) => {
+exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
   // Get item and categories for form.
   const [item, allCategories] = await Promise.all([
     Item.findById(req.params.id).populate('category').exec(),

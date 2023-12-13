@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body class="flex flex-col">
+    <%- include('sidebar') %>
+    <div>
+      <p><%= item.name %></p>
+      <p><%= item.description %></p>
+      <p>Price: <%= item.price %></p>
+      <p>Number in stock: <%= item.numberInStock %></p>
+      <p>Products out of stock count: <%= itemsOutOfStockCount %></p>
+      <p>Category :
+        <ul>
+          <% item.category.forEach(function(category) { %>
+            <li>
+              <a href='/products/<%= category.id %>'><%= category.name %></a>
+            </li>
+          <% }) %>
+        </ul>
+      </p>
+    </div>
+  </body>
+</html>
