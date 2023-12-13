@@ -88,7 +88,7 @@ exports.itemList = asyncHandler(async (req, res, next) => {
     .sort({ name: 1 })
     .exec();
 
-  res.render('itemList', { title: 'Item List', allItems });
+  res.render('itemList', { title: 'Item List', itemList: allItems });
 });
 
 // Display detail page for a specific item.

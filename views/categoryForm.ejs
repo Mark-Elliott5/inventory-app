@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body class="flex flex-col">
+    <%- include('sidebar') %>
+    <div>
+      <h>Create Category</h>
+      <div>
+        <form>
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            minlength="4"
+            maxlength="60"
+            value="<%= category.name ? category.name : '' %>"
+          />
+
+          <label for="description">Description:</label>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            minlength="4"
+            maxlength="500"
+            value="<%= category.description ? category.description : '' %>"
+          />
+
+          <button type="submit">
+            <%= item ? 'Modify category' : 'Create category' %>
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

@@ -54,6 +54,10 @@
               name="category" 
               value="<%=  category.name %>" />
           <% }); %>
+
+          <button type="submit">
+            <%= item ? 'Modify item' : 'Create item' %>
+          </button>
         </form>
       </div>
     </div>

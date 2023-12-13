@@ -8,7 +8,7 @@ exports.categoryList = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find().sort({ name: 1 }).exec();
   res.render('categoryList', {
     title: 'Category List',
-    listCategories: allCategories,
+    categoryList: allCategories,
   });
 });
 

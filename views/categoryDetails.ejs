@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body class="flex flex-col">
+    <%- include('sidebar') %>
+    <div>
+      <h><%= category.name %></h>
+      <p>Here are all products in the <%= category.name %> category:</p>
+      <ul>
+        <% categoryItems.forEach(function(item) { %>
+          <li>
+            <a href='/products/<%= item.id %>'><%= item.name %></a>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </body>
+</html>

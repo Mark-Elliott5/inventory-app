@@ -8,10 +8,8 @@
     <%- include('sidebar') %>
     <div>
       <h1><%= title %></h1>
-      <p>Welcome to <%= title %></p>
-
       <ul>
-        <% allItems.forEach(function(item) { %>
+        <% itemList.forEach(function(item) { %>
             <li><a href='/products/<%= item.id %>'><%= item.name %></a></li>
         <% }); %>
         </ul>

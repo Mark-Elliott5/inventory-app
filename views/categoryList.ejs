@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body class="flex flex-col">
+    <%- include('sidebar') %>
+    <div>
+      <h1><%= title %></h1>
+      <ul>
+        <% categoryList.forEach(function(category) { %>
+            <li>
+              <a href='/category/<%= category.id %>'><%= category.name %></a>
+            </li>
+        <% }); %>
+        </ul>
+    </div>
+  </body>
+</html>
