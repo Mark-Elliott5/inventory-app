@@ -10,8 +10,10 @@
       <h>Delete Product</h>
       <div>
         <p>Are you sure you want to delete <%= item.name %>?</p>
-        <form>
-          <button type="submit">Delete product</button>
+        <form method="post" action="">
+          <button type="submit" name="id" value="<%= item.id %>">
+            Delete product
+          </button>
         </form>
       </div>
     </div>

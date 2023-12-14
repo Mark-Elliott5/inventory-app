@@ -111,10 +111,10 @@ exports.categoryDeletePost = asyncHandler(async (req, res, next) => {
   // Get details of category and all associated items (in parallel)
   const [category, itemsInCategory] = await Promise.all([
     Category.findById(req.params.id).exec(),
-    Item.find({ category: req.params.id }, 'title summary').exec(),
+    Item.find({ category: req.params.id }).exec(),
   ]);
 
-  if (itemsInCategory.length > 0) {
+  if (!itemsInCategory.length === 0) {
     // Category has items. Render in same way as for GET route.
     // Doesn't allow category delete if items present
     res.render('categoryDelete', {

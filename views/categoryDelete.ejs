@@ -10,8 +10,10 @@
       <h>Delete Category</h>
       <div>
         <p>Are you sure you want to delete <%= category.name %>?</p>
-        <form>
-          <button type="submit">Delete category</button>
+        <form method="post" action="">
+          <button type="submit" name="id" value="<%= category.id %>">
+            Delete category
+          </button>
         </form>
       </div>
     </div>
