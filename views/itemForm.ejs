@@ -9,7 +9,7 @@
     <div>
       <h>Create Product</h>
       <div>
-        <form>
+        <form method="post" action="">
           <label for="name">Name:</label>
           <input
             type="text"
@@ -17,7 +17,7 @@
             name="name"
             minlength="4"
             maxlength="100"
-            value="<%= item.name ? item.name : '' %>"
+            value="<%= item ? item.name : '' %>"
           />
 
           <label for="description">Description:</label>
@@ -27,7 +27,7 @@
             name="description"
             minlength="10"
             maxlength="500"
-            value="<%= item.description ? item.description : '' %>"
+            value="<%= item ? item.description : '' %>"
           />
 
           <label for="price">Price:</label>
@@ -35,7 +35,7 @@
             type="number" 
             id="price" 
             name="price" 
-            value="<%= item.price ? item.price : '' %>"
+            value="<%= item ? item.price : '' %>"
           />
 
           <label for="numberInStock">Number in stock:</label>
@@ -43,16 +43,18 @@
             type="number" 
             id="numberInStock" 
             name="numberInStock" 
-            value="<%= item.numberInStock ? item.numberInStock : '' %>"
+            value="<%= item ? item.numberInStock : '' %>"
           />
-
+          
+          <p>Category:</p>
           <% categories.forEach(function(category) { %>
-            <label for="<%= category.name %>">category:</label>
+            <label for="<%= category.name %>"><%= category.name %></label>
             <input 
               type="checkbox" 
               id="<%= category.name %>" 
               name="category" 
-              value="<%=  category.name %>" />
+              value="<%= category._id %>"
+              <%= category.checked ? 'checked' : null %> />
           <% }); %>
 
           <button type="submit">

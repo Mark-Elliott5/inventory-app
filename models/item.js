@@ -30,7 +30,9 @@ const ItemSchema = new Schema({
   },
 });
 
-ItemSchema.virtual('url').get(() => `/item/${this._id}`);
+ItemSchema.virtual('url').get(function () {
+  return `/products/${this._id}`;
+});
 
 module.exports = mongoose.model('Item', ItemSchema);
 

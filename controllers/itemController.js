@@ -3,7 +3,7 @@ const asyncHandler = require('express-async-handler');
 const Item = require('../models/item');
 const Category = require('../models/category');
 
-const fieldValidationFunctions = [
+const fieldValidationFunctions = (req, res, next) => [
   body('name', 'Name must be at least 4 characters.')
     .trim()
     .isLength({ min: 1 })
@@ -22,11 +22,18 @@ const fieldValidationFunctions = [
     min: 0,
   }),
   body('category.*').escape(),
+  next(),
 ];
 
-const handleFormRendering = async (req, res, next) => {
+const handleFormRendering = asyncHandler(async (req, res, next) => {
+  console.log('Rendering POST request');
+
   // Extract the validation errors from a request.
   const errors = validationResult(req);
+  // const newCategoryArray = req.body.category.map((category) =>
+  //   Category.findById(category)
+  // );
+  // console.log(newCategoryArray);
 
   // Create a Item object with escaped and trimmed data.
   const item = new Item({
@@ -40,7 +47,7 @@ const handleFormRendering = async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/error messages.
-
+    console.log(errors);
     // Get all categories for form.
     const allCategories = await Category.find().exec();
 
@@ -58,10 +65,16 @@ const handleFormRendering = async (req, res, next) => {
     });
   } else {
     // Data from form is valid. Save item.
-    await item.save();
+    if (req.params.id) {
+      await Item.findByIdAndUpdate(req.params.id, item, {});
+    } else {
+      await item.save();
+    }
+    console.log(item);
+    console.log(item.url);
     res.redirect(item.url);
   }
-};
+});
 
 exports.index = asyncHandler(async (req, res, next) => {
   // Get details of items, items in/out of stock, category counts (in parallel)
@@ -88,15 +101,14 @@ exports.itemList = asyncHandler(async (req, res, next) => {
     .sort({ name: 1 })
     .exec();
 
+  console.log(allItems);
   res.render('itemList', { title: 'Item List', itemList: allItems });
 });
 
 // Display detail page for a specific item.
 exports.itemDetail = asyncHandler(async (req, res, next) => {
   // Get details of item
-  const item = await Promise.all([
-    Item.findById(req.params.id).populate('category').exec(),
-  ]);
+  const item = await Item.findById(req.params.id).populate('category').exec();
 
   if (item === null) {
     // No results.
@@ -105,7 +117,10 @@ exports.itemDetail = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  res.render('itemDetail', {
+  console.log('Item ID:', req.params.id);
+  console.log(item);
+  // console.log(item.category[0]);
+  res.render('itemDetails', {
     title: item.name,
     item,
   });
@@ -119,6 +134,7 @@ exports.itemCreateGet = asyncHandler(async (req, res, next) => {
   res.render('itemForm', {
     title: 'Create Item',
     categories: allCategories,
+    item: undefined,
   });
 });
 
@@ -134,7 +150,7 @@ exports.itemCreatePost = [
   },
 
   // Validate and sanitize fields.
-  ...fieldValidationFunctions,
+  // ...fieldValidationFunctions,
   // Process request after validation and sanitization.
 
   asyncHandler(handleFormRendering),
@@ -146,7 +162,7 @@ exports.itemDeleteGet = asyncHandler(async (req, res, next) => {
 
   if (item === null) {
     // No results.
-    res.redirect('/catalog/items');
+    res.redirect('/products');
   }
 
   res.render('itemDelete', {
@@ -163,12 +179,12 @@ exports.itemDeletePost = asyncHandler(async (req, res, next) => {
 
   if (item === null) {
     // No results.
-    res.redirect('/catalog/items');
+    res.redirect('/products');
   }
 
   // Delete object and redirect to the list of items.
   await Item.findByIdAndDelete(req.body.id);
-  res.redirect('/catalog/items');
+  res.redirect('/products');
 });
 
 // Display item update form on GET.
@@ -176,7 +192,7 @@ exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
   // Get item and categories for form.
   const [item, allCategories] = await Promise.all([
     Item.findById(req.params.id).populate('category').exec(),
-    Category.find().exec(),
+    Category.find().lean().exec(),
   ]);
 
   if (item === null) {
@@ -190,7 +206,10 @@ exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
 
   const checkedCategories = allCategories.map((category) => ({
     ...category,
-    checked: item.category.indexOf(category._id) > -1 ? 'true' : undefined,
+    checked:
+      item.category
+        .map((cat) => cat._id.toString())
+        .indexOf(category._id.toString()) > -1,
   }));
 
   res.render('itemForm', {
@@ -204,16 +223,18 @@ exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
 exports.itemUpdatePost = [
   // Convert the category to an array.
   (req, res, next) => {
+    console.log('checking POST request for array');
     if (!Array.isArray(req.body.category)) {
       req.body.category =
         typeof req.body.category === 'undefined' ? [] : [req.body.category];
     }
-    // next(); <- This is unneccessary? Unsure why MDN put this here.
+    console.log('done');
+    next();
   },
-
   // Validate and sanitize fields.
-  ...fieldValidationFunctions,
+  (req, res, next) => fieldValidationFunctions(req, res, next),
+  // () => console.log('Rendering POST request'),
 
   // Process request after validation and sanitization.
-  asyncHandler(handleFormRendering),
+  handleFormRendering,
 ];

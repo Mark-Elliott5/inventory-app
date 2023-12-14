@@ -11,12 +11,12 @@
       <p><%= item.description %></p>
       <p>Price: <%= item.price %></p>
       <p>Number in stock: <%= item.numberInStock %></p>
-      <p>Products out of stock count: <%= itemsOutOfStockCount %></p>
+      <p>Products out of stock count: <%= item.OutOfStockCount %></p>
       <p>Category :
         <ul>
           <% item.category.forEach(function(category) { %>
             <li>
-              <a href='/products/<%= category.id %>'><%= category.name %></a>
+              <a href='/category/<%= category.id %>'><%= category.name %></a>
             </li>
           <% }) %>
         </ul>

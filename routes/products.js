@@ -3,20 +3,20 @@ const itemController = require('../controllers/itemController');
 
 const router = express.Router();
 
-router.get('/products', itemController.itemList);
+router.get('/create', itemController.itemCreateGet);
 
-router.get('/products/:id', itemController.itemDetail);
+router.post('/create', itemController.itemCreatePost);
 
-router.get('/products/create', itemController.itemCreateGet);
+router.get('/:id/update', itemController.itemUpdateGet);
 
-router.post('/products/create', itemController.itemCreatePost);
+router.post('/:id/update', itemController.itemUpdatePost);
 
-router.get('/products/:id/update', itemController.itemUpdateGet);
+router.get('/:id/delete', itemController.itemDeleteGet);
 
-router.post('/products/:id/update', itemController.itemUpdatePost);
+router.post('/:id/delete', itemController.itemDeletePost);
 
-router.get('/products/:id/delete', itemController.itemDeleteGet);
+router.get('/:id', itemController.itemDetail);
 
-router.post('/products/:id/update', itemController.itemUpdatePost);
+router.get('/', itemController.itemList);
 
 module.exports = router;

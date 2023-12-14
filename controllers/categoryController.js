@@ -88,7 +88,7 @@ exports.categoryDeleteGet = asyncHandler(async (req, res, next) => {
   ]);
   if (category === null) {
     // No results.
-    res.redirect('/catalog/categories');
+    res.redirect('/category');
   }
 
   res.render('categoryDelete', {
@@ -117,7 +117,7 @@ exports.categoryDeletePost = asyncHandler(async (req, res, next) => {
   } else {
     // Category has no items. Delete object and redirect to the list of categories.
     await Category.findByIdAndDelete(req.body.id);
-    res.redirect('/catalog/categories');
+    res.redirect('/category');
   }
 });
 
