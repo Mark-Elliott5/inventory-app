@@ -12,7 +12,7 @@ const fieldValidationFunctions = (req, res, next) => [
     .trim()
     .isLength({ min: 10, max: 500 })
     .escape(),
-  body('Price', 'Price must be at least 0.01.')
+  body('price', 'Price must be at least 0.01.')
     .isFloat({ min: 0.01 })
     .custom((value) => {
       const decimalPlaces = (value.toString().split('.')[1] || '').length;
@@ -30,10 +30,6 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
 
   // Extract the validation errors from a request.
   const errors = validationResult(req);
-  // const newCategoryArray = req.body.category.map((category) =>
-  //   Category.findById(category)
-  // );
-  // console.log(newCategoryArray);
 
   // Create a Item object with escaped and trimmed data.
   const item = new Item({
@@ -42,7 +38,7 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
     price: req.body.price,
     numberInStock: req.body.numberInStock,
     category: req.body.category,
-    _id: req.params.id ? req.params.id : 'undefined', // This is required, or a new ID will be assigned!
+    _id: req.params.id ? req.params.id : undefined, // This is required, or a new ID will be assigned!
   });
 
   if (!errors.isEmpty()) {
@@ -146,14 +142,14 @@ exports.itemCreatePost = [
       req.body.category =
         typeof req.body.category === 'undefined' ? [] : [req.body.category];
     }
-    // next(); <- This is unneccessary? Unsure why MDN put this here.
+    next();
   },
 
   // Validate and sanitize fields.
-  // ...fieldValidationFunctions,
+  (req, res, next) => fieldValidationFunctions(req, res, next),
   // Process request after validation and sanitization.
 
-  asyncHandler(handleFormRendering),
+  handleFormRendering,
 ];
 
 // Display item delete form on GET.

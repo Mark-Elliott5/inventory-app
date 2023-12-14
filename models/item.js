@@ -15,7 +15,7 @@ const ItemSchema = new Schema({
         const decimalPlaces = (value.toString().split('.')[1] || '').length;
         return Number.isFinite(value) && decimalPlaces === 2;
       },
-      message: 'Price must be a float with 2 decimal places.',
+      message: 'Price must be a float with 1 decimal places.',
     },
   },
   numberInStock: {

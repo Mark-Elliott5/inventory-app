@@ -19,10 +19,11 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
   // Extract the validation errors from a request .
   const errors = validationResult(req);
 
-  // Create a category object with escaped and trimmed data (and the old id!)
+  // Create a category object with escaped and trimmed data
   const category = new Category({
     name: req.body.name,
-    _id: req.params.id,
+    description: req.body.description,
+    _id: req.params.id ? req.params.id : undefined,
   });
 
   if (!errors.isEmpty()) {
@@ -32,9 +33,12 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
       category,
       errors: errors.array(),
     });
-  } else {
-    // Data from form is valid. Update the record.
+  } else if (req.params.id) {
     await Category.findByIdAndUpdate(req.params.id, category);
+    res.redirect(category.url);
+  } else {
+    await category.save();
+    // New category saved. Redirect to category detail page.
     res.redirect(category.url);
   }
 });
@@ -77,45 +81,10 @@ exports.categoryCreateGet = (req, res, next) => {
 // Handle Category create on POST.
 exports.categoryCreatePost = [
   // Validate and sanitize the name field.
-  body('name', 'Category name must contain at least 4 characters')
-    .trim()
-    .isLength({ min: 4 })
-    .escape(),
+  (req, res, next) => fieldValidationFunctions(req, res, next),
 
   // Process request after validation and sanitization.
-  asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
-    const errors = validationResult(req);
-
-    // Create a category object with escaped and trimmed data.
-    const category = new Category({
-      name: req.body.name,
-      description: req.body.description,
-    });
-
-    if (!errors.isEmpty()) {
-      // There are errors. Render the form again with sanitized values/error messages.
-      res.render('categoryForm', {
-        title: 'Create Category',
-        category,
-        errors: errors.array(),
-      });
-    } else {
-      // Data from form is valid.
-      // Check if Category with same name (case insensitive) already exists.
-      const categoryExists = await Category.findOne({ name: req.body.name })
-        .collation({ locale: 'en', strength: 2 })
-        .exec();
-      if (categoryExists) {
-        // Category exists, redirect to its detail page.
-        res.redirect(categoryExists.url);
-      } else {
-        await category.save();
-        // New category saved. Redirect to category detail page.
-        res.redirect(category.url);
-      }
-    }
-  }),
+  handleFormRendering,
 ];
 
 // Display Category delete form on GET.

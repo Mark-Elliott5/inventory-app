@@ -8,6 +8,7 @@
     <%- include('sidebar') %>
     <div>
       <h><%= category.name %></h>
+      <p><%= category.description %></p>
       <p>Here are all products in the <%= category.name %> category:</p>
       <ul>
         <% categoryItems.forEach(function(item) { %>
