@@ -3,6 +3,42 @@ const asyncHandler = require('express-async-handler');
 const Category = require('../models/category');
 const Item = require('../models/item');
 
+const fieldValidationFunctions = (req, res, next) => [
+  body('name', 'Category name must contain at least 3 characters')
+    .trim()
+    .isLength({ min: 3, max: 60 })
+    .escape(),
+  body('description', 'Description must be at least 10 characters.')
+    .trim()
+    .isLength({ min: 4, max: 500 })
+    .escape(),
+  next(),
+];
+
+const handleFormRendering = asyncHandler(async (req, res, next) => {
+  // Extract the validation errors from a request .
+  const errors = validationResult(req);
+
+  // Create a category object with escaped and trimmed data (and the old id!)
+  const category = new Category({
+    name: req.body.name,
+    _id: req.params.id,
+  });
+
+  if (!errors.isEmpty()) {
+    // There are errors. Render the form again with sanitized values and error messages.
+    res.render('categoryForm', {
+      title: 'Update Category',
+      category,
+      errors: errors.array(),
+    });
+  } else {
+    // Data from form is valid. Update the record.
+    await Category.findByIdAndUpdate(req.params.id, category);
+    res.redirect(category.url);
+  }
+});
+
 // Display list of all Category.
 exports.categoryList = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find().sort({ name: 1 }).exec();
@@ -17,7 +53,7 @@ exports.categoryDetail = asyncHandler(async (req, res, next) => {
   // Get details of category and all associated items (in parallel)
   const [category, itemsInCategory] = await Promise.all([
     Category.findById(req.params.id).exec(),
-    Item.find({ category: req.params.id }, 'title summary').exec(),
+    Item.find({ category: req.params.id }).exec(),
   ]);
   if (category === null) {
     // No results.
@@ -26,7 +62,7 @@ exports.categoryDetail = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  res.render('categoryDetail', {
+  res.render('categoryDetails', {
     title: 'Category Detail',
     category,
     categoryItems: itemsInCategory,
@@ -35,7 +71,7 @@ exports.categoryDetail = asyncHandler(async (req, res, next) => {
 
 // Display Category create form on GET.
 exports.categoryCreateGet = (req, res, next) => {
-  res.render('categoryForm', { title: 'Create Category' });
+  res.render('categoryForm', { title: 'Create Category', category: undefined });
 };
 
 // Handle Category create on POST.
@@ -137,34 +173,8 @@ exports.categoryUpdateGet = asyncHandler(async (req, res, next) => {
 
 // Handle Category update on POST.
 exports.categoryUpdatePost = [
-  // Validate and sanitize the name field.
-  body('name', 'Category name must contain at least 3 characters')
-    .trim()
-    .isLength({ min: 3 })
-    .escape(),
-
+  // Validate and sanitize the fields.
+  (req, res, next) => fieldValidationFunctions(req, res, next),
   // Process request after validation and sanitization.
-  asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request .
-    const errors = validationResult(req);
-
-    // Create a category object with escaped and trimmed data (and the old id!)
-    const category = new Category({
-      name: req.body.name,
-      _id: req.params.id,
-    });
-
-    if (!errors.isEmpty()) {
-      // There are errors. Render the form again with sanitized values and error messages.
-      res.render('categoryForm', {
-        title: 'Update Category',
-        category,
-        errors: errors.array(),
-      });
-    } else {
-      // Data from form is valid. Update the record.
-      await Category.findByIdAndUpdate(req.params.id, category);
-      res.redirect(category.url);
-    }
-  }),
+  handleFormRendering,
 ];

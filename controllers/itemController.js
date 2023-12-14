@@ -6,11 +6,11 @@ const Category = require('../models/category');
 const fieldValidationFunctions = (req, res, next) => [
   body('name', 'Name must be at least 4 characters.')
     .trim()
-    .isLength({ min: 1 })
+    .isLength({ min: 1, max: 100 })
     .escape(),
   body('description', 'Description must be at least 10 characters.')
     .trim()
-    .isLength({ min: 10 })
+    .isLength({ min: 10, max: 500 })
     .escape(),
   body('Price', 'Price must be at least 0.01.')
     .isFloat({ min: 0.01 })
