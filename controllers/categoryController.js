@@ -88,7 +88,10 @@ exports.categoryCreatePost = [
     const errors = validationResult(req);
 
     // Create a category object with escaped and trimmed data.
-    const category = new Category({ name: req.body.name });
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    });
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
