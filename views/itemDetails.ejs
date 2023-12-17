@@ -7,19 +7,22 @@
   <body class="flex flex-col">
     <%- include('sidebar') %>
     <div>
-      <p><%= item.name %></p>
-      <p><%= item.description %></p>
-      <p>Price: <%= item.price %></p>
-      <p>Number in stock: <%= item.numberInStock %></p>
-      <p>Category :
-        <ul>
-          <% item.category.forEach(function(category) { %>
-            <li>
-              <a href='/category/<%= category.id %>'><%= category.name %></a>
-            </li>
-          <% }) %>
-        </ul>
-      </p>
+      <div>
+        <p><%= item.name %></p>
+        <p><%= item.description %></p>
+        <p>Price: <%= item.price %></p>
+        <p>Number in stock: <%= item.numberInStock %></p>
+        <p>Category :
+          <ul>
+            <% item.category.forEach(function(category) { %>
+              <li>
+                <a href='/category/<%= category.id %>'><%= category.name %></a>
+              </li>
+            <% }) %>
+          </ul>
+        </p>
+      </div>
+    <%- include('updateDeleteButtons', { id: item.id }) %>
     </div>
   </body>
 </html>
