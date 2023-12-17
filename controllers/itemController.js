@@ -3,26 +3,33 @@ const asyncHandler = require('express-async-handler');
 const Item = require('../models/item');
 const Category = require('../models/category');
 
-const fieldValidationFunctions = (req, res, next) => [
+const fieldValidationFunctions = [
   body('name', 'Name must be at least 4 characters.')
+    .exists()
     .trim()
     .isLength({ min: 1, max: 100 })
     .escape(),
   body('description', 'Description must be at least 10 characters.')
+    .exists()
     .trim()
     .isLength({ min: 10, max: 500 })
     .escape(),
   body('price', 'Price must be at least 0.01.')
+    .exists()
     .isFloat({ min: 0.01 })
     .custom((value) => {
       const decimalPlaces = (value.toString().split('.')[1] || '').length;
       return Number.isFinite(value) && decimalPlaces === 2;
     }),
-  body('numberInStock', 'Number must be a non-negative integer').isInt({
-    min: 0,
-  }),
+  body('numberInStock', 'Number must be a non-negative integer')
+    .exists()
+    .isInt({
+      min: 0,
+    }),
+  body('category', 'Must have at least one category')
+    .exists()
+    .isArray({ min: 1 }),
   body('category.*').escape(),
-  next(),
 ];
 
 const handleFormRendering = asyncHandler(async (req, res, next) => {
@@ -43,9 +50,9 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/error messages.
-    console.log(errors);
+    // console.log(`errors: ${errors.array()}`);
     // Get all categories for form.
-    const allCategories = await Category.find().exec();
+    const allCategories = await Category.find().lean().exec();
 
     // Mark our selected categories as checked.
     const checkedCategories = allCategories.map((category) => ({
@@ -131,6 +138,7 @@ exports.itemCreateGet = asyncHandler(async (req, res, next) => {
     title: 'Create Item',
     categories: allCategories,
     item: undefined,
+    errors: false,
   });
 });
 
@@ -146,7 +154,7 @@ exports.itemCreatePost = [
   },
 
   // Validate and sanitize fields.
-  (req, res, next) => fieldValidationFunctions(req, res, next),
+  ...fieldValidationFunctions,
   // Process request after validation and sanitization.
 
   handleFormRendering,
@@ -212,6 +220,7 @@ exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
     title: 'Update Item',
     categories: checkedCategories,
     item,
+    errors: false,
   });
 });
 
@@ -228,7 +237,7 @@ exports.itemUpdatePost = [
     next();
   },
   // Validate and sanitize fields.
-  (req, res, next) => fieldValidationFunctions(req, res, next),
+  ...fieldValidationFunctions,
   // () => console.log('Rendering POST request'),
 
   // Process request after validation and sanitization.

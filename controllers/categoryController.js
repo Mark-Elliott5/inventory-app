@@ -3,16 +3,17 @@ const asyncHandler = require('express-async-handler');
 const Category = require('../models/category');
 const Item = require('../models/item');
 
-const fieldValidationFunctions = (req, res, next) => [
+const fieldValidationFunctions = [
   body('name', 'Category name must contain at least 3 characters')
+    .exists()
     .trim()
     .isLength({ min: 3, max: 60 })
     .escape(),
   body('description', 'Description must be at least 10 characters.')
+    .exists()
     .trim()
     .isLength({ min: 4, max: 500 })
     .escape(),
-  next(),
 ];
 
 const handleFormRendering = asyncHandler(async (req, res, next) => {
@@ -75,13 +76,17 @@ exports.categoryDetail = asyncHandler(async (req, res, next) => {
 
 // Display Category create form on GET.
 exports.categoryCreateGet = (req, res, next) => {
-  res.render('categoryForm', { title: 'Create Category', category: undefined });
+  res.render('categoryForm', {
+    title: 'Create Category',
+    category: undefined,
+    errors: false,
+  });
 };
 
 // Handle Category create on POST.
 exports.categoryCreatePost = [
   // Validate and sanitize the name field.
-  (req, res, next) => fieldValidationFunctions(req, res, next),
+  ...fieldValidationFunctions,
 
   // Process request after validation and sanitization.
   handleFormRendering,
@@ -140,13 +145,17 @@ exports.categoryUpdateGet = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  res.render('categoryForm', { title: 'Update Category', category });
+  res.render('categoryForm', {
+    title: 'Update Category',
+    category,
+    errors: false,
+  });
 });
 
 // Handle Category update on POST.
 exports.categoryUpdatePost = [
   // Validate and sanitize the fields.
-  (req, res, next) => fieldValidationFunctions(req, res, next),
+  ...fieldValidationFunctions,
   // Process request after validation and sanitization.
   handleFormRendering,
 ];

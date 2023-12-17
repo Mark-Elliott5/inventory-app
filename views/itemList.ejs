@@ -4,15 +4,15 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
-  <body class="flex flex-col">
+  <body class="flex bg-zinc-700 text-white">
     <%- include('sidebar') %>
     <div>
       <h1><%= title %></h1>
-      <ul>
+      <div class="grid grid-cols-4 gap-1">
         <% itemList.forEach(function(item) { %>
-            <li><a href='/products/<%= item.id %>'><%= item.name %></a></li>
+            <div class="prod-list border-neutral-300 p-2 border"><a class="block w-full text-center" href='/products/<%= item.id %>'><%= item.name %></a></div>
         <% }); %>
-        </ul>
+      </div>
     </div>
   </body>
 </html>

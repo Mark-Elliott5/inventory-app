@@ -4,64 +4,85 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
-  <body class="flex flex-col">
+  <body class="flex bg-zinc-700 text-white">
     <%- include('sidebar') %>
     <div>
       <h>Create Product</h>
       <div>
         <form method="post" action="">
-          <label for="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            minlength="4"
-            maxlength="100"
-            value="<%= item ? item.name : '' %>"
-          />
+          <div class="my-3">
+            <label for="name">Name:</label>
+            <input
+              class="rounded-md text-black px-1"
+              type="text"
+              id="name"
+              name="name"
+              minlength="4"
+              maxlength="100"
+              value="<%= item ? item.name : '' %>"
+            />
+          </div>
 
-          <label for="description">Description:</label>
-          <input
-            type="text"
-            id="description"
-            name="description"
-            minlength="10"
-            maxlength="500"
-            value="<%= item ? item.description : '' %>"
-          />
+          <div class="my-3">
+            <label for="description">Description:</label>
+            <input
+              class="rounded-md text-black px-1"
+              type="text"
+              id="description"
+              name="description"
+              minlength="10"
+              maxlength="500"
+              value="<%= item ? item.description : '' %>"
+            />
+          </div>
 
-          <label for="price">Price:</label>
-          <input 
-            type="number" 
-            id="price" 
-            name="price" 
-            step="0.01"
-            value="<%= item ? item.price : '' %>"
-          />
-
-          <label for="numberInStock">Number in stock:</label>
-          <input 
-            type="number" 
-            id="numberInStock" 
-            name="numberInStock" 
-            value="<%= item ? item.numberInStock : '' %>"
-          />
-          
-          <p>Category:</p>
-          <% categories.forEach(function(category) { %>
-            <label for="<%= category.name %>"><%= category.name %></label>
+          <div class="my-3">
+            <label for="price">Price:</label>
             <input 
-              type="checkbox" 
-              id="<%= category.name %>" 
-              name="category" 
-              value="<%= category._id %>"
-              <%= category.checked ? 'checked' : null %> />
-          <% }); %>
+              class="rounded-md text-black px-1"
+              type="number" 
+              id="price" 
+              name="price" 
+              step="0.01"
+              value="<%= item ? item.price : '' %>"
+            />
+          </div>
 
-          <button type="submit">
+          <div class="my-3">
+            <label for="numberInStock">Number in stock:</label>
+            <input 
+              class="rounded-md text-black px-1"
+              type="number" 
+              id="numberInStock" 
+              name="numberInStock" 
+              value="<%= item ? item.numberInStock : '' %>"
+            />
+          </div>
+          
+          <div class="my-3">
+            <p>Category:</p>
+              <% categories.forEach(function(category) { %>
+                <div>
+                  <label for="<%= category.name %>"><%= category.name %></label>
+                  <input 
+                    type="checkbox" 
+                    id="<%= category.name %>" 
+                    name="category" 
+                    value="<%= category._id %>"
+                    <%= category.checked ? 'checked' : null %> />
+                </div>
+              <% }); %>
+          </div>
+
+          <button class="bg-green-500 rounded-md p-3" type="submit">
             <%= item ? 'Modify item' : 'Create item' %>
           </button>
         </form>
+        <div>
+          <% if (errors) { errors.forEach(function(err) { %>
+            <p class="text-red-500"><%= err.msg %></p>
+          <% })} %>
+        </div>
       </div>
     </div>
   </body>

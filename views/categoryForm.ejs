@@ -4,36 +4,47 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
-  <body class="flex flex-col">
+  <body class="flex bg-zinc-700 text-white">
     <%- include('sidebar') %>
     <div>
       <h>Create Category</h>
       <div>
         <form method="post" action="">
-          <label for="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            minlength="4"
-            maxlength="60"
-            value="<%= category ? category.name : '' %>"
-          />
+          <div class="my-3">
+            <label for="name">Name:</label>
+            <input
+              class="rounded-md text-black px-1"
+              type="text"
+              id="name"
+              name="name"
+              minlength="4"
+              maxlength="60"
+              value="<%= category ? category.name : '' %>"
+            />
+          </div>
 
-          <label for="description">Description:</label>
-          <input
-            type="text"
-            id="description"
-            name="description"
-            minlength="4"
-            maxlength="500"
-            value="<%= category ? category.description : '' %>"
-          />
+          <div class="my-3">
+            <label for="description">Description:</label>
+            <input
+              class="rounded-md text-black px-1"
+              type="text"
+              id="description"
+              name="description"
+              minlength="4"
+              maxlength="500"
+              value="<%= category ? category.description : '' %>"
+            />
+          </div>
 
-          <button type="submit">
+          <button class="bg-green-500 rounded-md p-3" type="submit">
             <%= category ? 'Modify category' : 'Create category' %>
           </button>
         </form>
+        <div>
+          <% if (errors) { errors.forEach(function(err) { %>
+            <p class="text-red-500"><%= err.msg %></p>
+          <% })} %>
+        </div>
       </div>
     </div>
   </body>
