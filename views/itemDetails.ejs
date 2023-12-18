@@ -4,7 +4,7 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
-  <body class="flex bg-zinc-700 text-white">
+  <body class="flex bg-zinc-700 text-white m-4">
     <%- include('sidebar') %>
     <div>
       <div>
@@ -12,7 +12,7 @@
         <p><%= item.description %></p>
         <p>Price: $<%= item.price %></p>
         <p>Number in stock: <%= item.numberInStock %></p>
-        <p>Category :
+        <p>Category:
           <ul>
             <% item.category.forEach(function(category) { %>
               <li>

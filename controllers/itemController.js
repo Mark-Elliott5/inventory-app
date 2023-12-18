@@ -14,12 +14,12 @@ const fieldValidationFunctions = [
     .trim()
     .isLength({ min: 10, max: 500 })
     .escape(),
-  body('price', 'Price must be at least 0.01.')
+  body('price', 'Price must be at least 0.01 and include cents.')
     .exists()
     .isFloat({ min: 0.01 })
     .custom((value) => {
       const decimalPlaces = (value.toString().split('.')[1] || '').length;
-      return Number.isFinite(value) && decimalPlaces === 2;
+      return decimalPlaces === 2;
     }),
   body('numberInStock', 'Number must be a non-negative integer')
     .exists()
@@ -33,8 +33,6 @@ const fieldValidationFunctions = [
 ];
 
 const handleFormRendering = asyncHandler(async (req, res, next) => {
-  console.log('Rendering POST request');
-
   // Extract the validation errors from a request.
   const errors = validationResult(req);
 
@@ -50,7 +48,6 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     // There are errors. Render form again with sanitized values/error messages.
-    // console.log(`errors: ${errors.array()}`);
     // Get all categories for form.
     const allCategories = await Category.find().lean().exec();
 
@@ -73,8 +70,6 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
     } else {
       await item.save();
     }
-    console.log(item);
-    console.log(item.url);
     res.redirect(item.url);
   }
 });
@@ -104,7 +99,6 @@ exports.itemList = asyncHandler(async (req, res, next) => {
     .sort({ name: 1 })
     .exec();
 
-  console.log(allItems);
   res.render('itemList', { title: 'Item List', itemList: allItems });
 });
 
@@ -120,9 +114,6 @@ exports.itemDetail = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  console.log('Item ID:', req.params.id);
-  console.log(item);
-  // console.log(item.category[0]);
   res.render('itemDetails', {
     title: item.name,
     item,
@@ -228,17 +219,14 @@ exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
 exports.itemUpdatePost = [
   // Convert the category to an array.
   (req, res, next) => {
-    console.log('checking POST request for array');
     if (!Array.isArray(req.body.category)) {
       req.body.category =
         typeof req.body.category === 'undefined' ? [] : [req.body.category];
     }
-    console.log('done');
     next();
   },
   // Validate and sanitize fields.
   ...fieldValidationFunctions,
-  // () => console.log('Rendering POST request'),
 
   // Process request after validation and sanitization.
   handleFormRendering,

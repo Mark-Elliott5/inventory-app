@@ -4,14 +4,19 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
-  <body class="flex bg-zinc-700 text-white">
+  <body class="flex bg-zinc-700 text-white m-4">
     <%- include('sidebar') %>
     <div>
       <h>Delete Product</h>
       <div>
         <p>Are you sure you want to delete <%= item.name %>?</p>
         <form method="post" action="">
-          <button type="submit" name="id" value="<%= item.id %>">
+          <button
+            class="bg-red-500 rounded-md p-3"
+            type="submit"
+            name="id"
+            value="<%= item.id %>"
+          >
             Delete product
           </button>
         </form>
