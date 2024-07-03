@@ -1,7 +1,10 @@
 const { body, validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 const Item = require('../models/item');
 const Category = require('../models/category');
+
+const { Types } = mongoose;
 
 const fieldValidationFunctions = [
   body('name', 'Name must be at least 4 characters.')
@@ -66,7 +69,7 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
   } else {
     // Data from form is valid. Save item.
     if (req.params.id) {
-      await Item.findByIdAndUpdate(req.params.id, item, {});
+      await Item.findByIdAndUpdate(new Types.ObjectId(req.params.id), item, {});
     } else {
       await item.save();
     }
@@ -105,7 +108,9 @@ exports.itemList = asyncHandler(async (req, res, next) => {
 // Display detail page for a specific item.
 exports.itemDetail = asyncHandler(async (req, res, next) => {
   // Get details of item
-  const item = await Item.findById(req.params.id).populate('category').exec();
+  const item = await Item.findById(new Types.ObjectId(req.params.id))
+    .populate('category')
+    .exec();
 
   if (item === null) {
     // No results.
@@ -153,7 +158,9 @@ exports.itemCreatePost = [
 
 // Display item delete form on GET.
 exports.itemDeleteGet = asyncHandler(async (req, res, next) => {
-  const item = await Item.findById(req.params.id).populate('category').exec();
+  const item = await Item.findById(new Types.ObjectId(req.params.id))
+    .populate('category')
+    .exec();
 
   if (item === null) {
     // No results.
@@ -170,7 +177,9 @@ exports.itemDeleteGet = asyncHandler(async (req, res, next) => {
 exports.itemDeletePost = asyncHandler(async (req, res, next) => {
   // Assume the post has valid id (ie no validation/sanitization).
 
-  const item = await Item.findById(req.params.id).populate('category').exec();
+  const item = await Item.findById(new Types.ObjectId(req.params.id))
+    .populate('category')
+    .exec();
 
   if (item === null) {
     // No results.
@@ -178,7 +187,7 @@ exports.itemDeletePost = asyncHandler(async (req, res, next) => {
   }
 
   // Delete object and redirect to the list of items.
-  await Item.findByIdAndDelete(req.body.id);
+  await Item.findByIdAndDelete(new Types.ObjectId(req.params.id));
   res.redirect('/products');
 });
 
@@ -186,7 +195,9 @@ exports.itemDeletePost = asyncHandler(async (req, res, next) => {
 exports.itemUpdateGet = asyncHandler(async (req, res, next) => {
   // Get item and categories for form.
   const [item, allCategories] = await Promise.all([
-    Item.findById(req.params.id).populate('category').exec(),
+    Item.findById(new Types.ObjectId(req.params.id))
+      .populate('category')
+      .exec(),
     Category.find().lean().exec(),
   ]);
 

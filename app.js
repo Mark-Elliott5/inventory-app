@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+require('dotenv').config();
 
 const compression = require('compression');
 const helmet = require('helmet');
@@ -14,7 +15,7 @@ const RateLimit = require('express-rate-limit');
 
 const limiter = RateLimit({
   windowMs: 1 * 10 * 1000, // 10 seconds
-  max: 10,
+  max: 100,
 });
 // Apply rate limiter to all requests
 app.use(limiter);
@@ -28,6 +29,7 @@ const indexRouter = require('./routes/index');
 mongoose.set('strictQuery', false);
 
 const mongoDB = process.env.MONGODB_URI;
+console.log(mongoDB);
 
 main().catch((err) => console.log(err));
 async function main() {
@@ -68,9 +70,10 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  const isDev = req.app.get('env') === 'development';
+  res.locals.message = isDev ? err.message : '404 Not Found';
+  res.locals.error = isDev ? err : {};
+  res.locals.title = isDev ? err.status : '404 Not Found';
   // render the error page
   res.status(err.status || 500);
   res.render('error');

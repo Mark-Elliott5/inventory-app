@@ -1,7 +1,10 @@
 const { body, validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 const Category = require('../models/category');
 const Item = require('../models/item');
+
+const { Types } = mongoose;
 
 const fieldValidationFunctions = [
   body('name', 'Category name must contain at least 3 characters')
@@ -35,7 +38,10 @@ const handleFormRendering = asyncHandler(async (req, res, next) => {
       errors: errors.array(),
     });
   } else if (req.params.id) {
-    await Category.findByIdAndUpdate(req.params.id, category);
+    await Category.findByIdAndUpdate(
+      new Types.ObjectId(req.params.id),
+      category
+    );
     res.redirect(category.url);
   } else {
     await category.save();
@@ -57,8 +63,8 @@ exports.categoryList = asyncHandler(async (req, res, next) => {
 exports.categoryDetail = asyncHandler(async (req, res, next) => {
   // Get details of category and all associated items (in parallel)
   const [category, itemsInCategory] = await Promise.all([
-    Category.findById(req.params.id).exec(),
-    Item.find({ category: req.params.id }).exec(),
+    Category.findById(new Types.ObjectId(req.params.id)).exec(),
+    Item.find({ category: new Types.ObjectId(req.params.id) }).exec(),
   ]);
   if (category === null) {
     // No results.
@@ -96,8 +102,11 @@ exports.categoryCreatePost = [
 exports.categoryDeleteGet = asyncHandler(async (req, res, next) => {
   // Get details of category and all associated items (in parallel)
   const [category, itemsInCategory] = await Promise.all([
-    Category.findById(req.params.id).exec(),
-    Item.find({ category: req.params.id }, 'title summary').exec(),
+    Category.findById(new Types.ObjectId(req.params.id)).exec(),
+    Item.find(
+      { category: new Types.ObjectId(req.params.id) },
+      'title summary'
+    ).exec(),
   ]);
   if (category === null) {
     // No results.
@@ -115,8 +124,8 @@ exports.categoryDeleteGet = asyncHandler(async (req, res, next) => {
 exports.categoryDeletePost = asyncHandler(async (req, res, next) => {
   // Get details of category and all associated items (in parallel)
   const [category, itemsInCategory] = await Promise.all([
-    Category.findById(req.params.id).exec(),
-    Item.find({ category: req.params.id }).exec(),
+    Category.findById(new Types.ObjectId(req.params.id)).exec(),
+    Item.find({ category: new Types.ObjectId(req.params.id) }).exec(),
   ]);
 
   if (!itemsInCategory.length === 0) {
@@ -129,14 +138,16 @@ exports.categoryDeletePost = asyncHandler(async (req, res, next) => {
     });
   } else {
     // Category has no items. Delete object and redirect to the list of categories.
-    await Category.findByIdAndDelete(req.body.id);
+    await Category.findByIdAndDelete(new Types.ObjectId(req.params.id));
     res.redirect('/category');
   }
 });
 
 // Display Category update form on GET.
 exports.categoryUpdateGet = asyncHandler(async (req, res, next) => {
-  const category = await Category.findById(req.params.id).exec();
+  const category = await Category.findById(
+    new Types.ObjectId(req.params.id)
+  ).exec();
 
   if (category === null) {
     // No results.
